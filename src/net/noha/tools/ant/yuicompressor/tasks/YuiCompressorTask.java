@@ -150,12 +150,15 @@ public class YuiCompressorTask extends MatchingTask {
         targetFile.getParentFile().mkdirs();
         targetFile.createNewFile(); // if necessary, creates the target file
 
-        final FileChannel srcChannel = new FileInputStream(srcFile).getChannel();
-        final FileChannel dstChannel = new FileOutputStream(targetFile).getChannel();
+        final FileInputStream srcStream = new FileInputStream(srcFile);
+        final FileOutputStream dstStream = new FileOutputStream(targetFile);
+
+        final FileChannel srcChannel = srcStream.getChannel();
+        final FileChannel dstChannel = dstStream.getChannel();
         dstChannel.transferFrom(srcChannel, 0, srcChannel.size());
 
-        srcChannel.close();
-        dstChannel.close();
+        srcStream.close();
+        dstStream.close();
     }
 
     private JavaScriptCompressor createJavaScriptCompressor(final Reader in) throws IOException {
