@@ -70,14 +70,42 @@ public class YuiCompressorTask extends MatchingTask {
 
     protected File toDir;
 
-    // properties with default values
-    protected Charset charset = Charsets.UTF_8;
+    // html, js and css options
+
+    // html and xml options
+    protected String type = "";
+    protected boolean preserveComments = false;
+    protected boolean removeIntertagSpaces = false;
+
+    // html options
+    protected boolean preserveMultiSpaces = false;
+    protected boolean preserveLineBreaks = false;
+    protected boolean removeQuotes = false;
+    protected boolean simpleDocType = false;
+    protected boolean removeStyleAttr = false;
+    protected boolean removeLinkAttr = false;
+    protected boolean removeScriptAttr = false;
+    protected boolean removeFormAttr = false;
+    protected boolean removeInputAttr = false;
+    protected boolean simpleBoolAttr = false;
+    protected boolean removeJsProtocol = false;
+    protected boolean removeHttpProtocol = false;
+    protected boolean removeHttpsProtocol = false;
+    protected boolean compressJs = false;
+    protected boolean compressCss = false;
+
+    // js and css options
     protected int lineBreakPosition = -1;
-    protected boolean munge = false;
-    protected boolean warn = true;
-    private boolean enabled = true;
-    protected boolean preserveAllSemiColons = true;
+    protected Charset charset = Charsets.UTF_8;
+
+    // js options
+    protected boolean munge = true;
+    protected boolean preserveAllSemiColons = false;
     protected boolean optimize = true;
+
+    // properties with default values
+    private boolean enabled = true;
+    protected boolean warn = true;
     protected boolean verbose = true;
 
     // suffixes
@@ -115,10 +143,10 @@ public class YuiCompressorTask extends MatchingTask {
                 final CssCompressor compressor = new CssCompressor(in);
                 compressor.compress(out, lineBreakPosition);
             } else if (fileType.equals(FileType.HTML_FILE) || fileType.equals(FileType.XHTML_FILE)) {
-                final HtmlCompressor compressor = new HtmlCompressor();
+                final HtmlCompressor compressor = createHtmlCompressor();
                 out.write(compressor.compress(readerToString(in)));
             } else if (fileType.equals(FileType.XML_FILE)){
-                final XmlCompressor compressor = new XmlCompressor();
+                final XmlCompressor compressor = createXmlCompressor();
                 out.write(compressor.compress(readerToString(in)));
             }
 
@@ -159,6 +187,45 @@ public class YuiCompressorTask extends MatchingTask {
 
         srcStream.close();
         dstStream.close();
+    }
+
+    private HtmlCompressor createHtmlCompressor() throws IllegalArgumentException {
+        //set compressor options
+        HtmlCompressor htmlCompressor = new HtmlCompressor();
+
+        htmlCompressor.setRemoveComments(!preserveComments);
+        htmlCompressor.setRemoveMultiSpaces(!preserveMultiSpaces);
+        htmlCompressor.setRemoveIntertagSpaces(removeIntertagSpaces);
+        htmlCompressor.setRemoveQuotes(removeQuotes);
+        htmlCompressor.setPreserveLineBreaks(preserveLineBreaks);
+        htmlCompressor.setCompressJavaScript(compressJs);
+        htmlCompressor.setCompressCss(compressCss);
+
+        htmlCompressor.setSimpleDoctype(simpleDocType);
+        htmlCompressor.setRemoveScriptAttributes(removeScriptAttr);
+        htmlCompressor.setRemoveStyleAttributes(removeStyleAttr);
+        htmlCompressor.setRemoveLinkAttributes(removeLinkAttr);
+        htmlCompressor.setRemoveFormAttributes(removeFormAttr);
+        htmlCompressor.setRemoveInputAttributes(removeInputAttr);
+        htmlCompressor.setSimpleBooleanAttributes(simpleBoolAttr);
+        htmlCompressor.setRemoveJavaScriptProtocol(removeJsProtocol);
+        htmlCompressor.setRemoveHttpProtocol(removeHttpProtocol);
+        htmlCompressor.setRemoveHttpsProtocol(removeHttpsProtocol);
+
+        htmlCompressor.setYuiJsNoMunge(!munge);
+        htmlCompressor.setYuiJsPreserveAllSemiColons(preserveAllSemiColons);
+        htmlCompressor.setYuiJsDisableOptimizations(!optimize);
+        htmlCompressor.setYuiJsLineBreak(lineBreakPosition);
+        htmlCompressor.setYuiCssLineBreak(lineBreakPosition);
+
+        return htmlCompressor;
+    }
+
+    private XmlCompressor createXmlCompressor() throws IllegalArgumentException {
+        XmlCompressor xmlCompressor = new XmlCompressor();
+        xmlCompressor.setRemoveComments(!preserveComments);
+
+        return xmlCompressor;
     }
 
     private JavaScriptCompressor createJavaScriptCompressor(final Reader in) throws IOException {
@@ -322,6 +389,78 @@ public class YuiCompressorTask extends MatchingTask {
 
     public void setWarn(final boolean warn) {
         this.warn = warn;
+    }
+
+    public void setType(final String type) {
+        this.type = type;
+    }
+
+    public void setPreserveComments(final boolean preserveComments) {
+        this.preserveComments = preserveComments;
+    }
+
+    public void setRemoveIntertagSpaces(final boolean removeIntertagSpaces) {
+        this.removeIntertagSpaces = removeIntertagSpaces;
+    }
+
+    public void setPreserveMultiSpaces(final boolean preserveMultiSpaces) {
+        this.preserveMultiSpaces = preserveMultiSpaces;
+    }
+
+    public void setPreserveLineBreaks(final boolean preserveLineBreaks) {
+        this.preserveLineBreaks = preserveLineBreaks;
+    }
+
+    public void setRemoveQuotes(final boolean removeQuotes) {
+        this.removeQuotes = removeQuotes;
+    }
+
+    public void setSimpleDocType(final boolean simpleDocType) {
+        this.simpleDocType = simpleDocType;
+    }
+
+    public void setRemoveStyleAttr(final boolean removeStyleAttr) {
+        this.removeStyleAttr = removeStyleAttr;
+    }
+
+    public void setRemoveLinkAttrfinal boolean removeLinkAttr) {
+        this.removeLinkAttr = removeLinkAttr;
+    }
+
+    public void setRemoveScriptAttr(final boolean removeScriptAttr) {
+        this.removeScriptAttr = removeScriptAttr;
+    }
+
+    public void setRemoveFormAttr(final boolean removeFormAttr) {
+        this.removeFormAttr = removeFormAttr;
+    }
+
+    public void setRemoveInputAttr(final boolean removeInputAttr) {
+        this.removeInputAttr = removeInputAttr;
+    }
+
+    public void setSimpleBoolAttr(final boolean simpleBoolAttr) {
+        this.simpleBoolAttr = simpleBoolAttr;
+    }
+
+    public void setRemoveJsProtocol(final boolean removeJsProtocol) {
+        this.removeJsProtocol = removeJsProtocol;
+    }
+
+    public void setRemoveHttpProtocol(final boolean removeHttpProtocol) {
+        this.removeHttpProtocol = removeHttpProtocol;
+    }
+
+    public void setRemoveHttpsProtocol(final boolean removeHttpsProtocol) {
+        this.removeHttpsProtocol = removeHttpsProtocol;
+    }
+
+    public void setCompressJs(final boolean compressJs) {
+        this.compressJs = compressJs;
+    }
+
+    public void setCompressCss(final boolean compressCss) {
+        this.compressCss = compressCss;
     }
 
     private void validateDirs() throws BuildException {
